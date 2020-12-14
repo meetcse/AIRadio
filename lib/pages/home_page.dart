@@ -157,46 +157,55 @@ class _HomePageState extends State<HomePage> {
       drawer: SafeArea(
         top: false,
         child: Drawer(
+          elevation: 0,
           child: Container(
-            color: _selectedColor ?? AIColors.primaryColor2,
-            child: radios != null
-                ? [
-                    80.heightBox,
-                    "All Channels".text.xl.white.semiBold.make().px16(),
-                    20.heightBox,
-                    ListView(
-                            padding: Vx.m0,
-                            shrinkWrap: true,
-                            children: radios
-                                .map(
-                                  (e) => ListTile(
-                                    onTap: () {
-                                      _audioPlayer.pause();
-                                      MyRadio _newRadio;
-                                      Navigator.pop(context);
+            color: Colors.transparent,
+            child: Container(
+              decoration: BoxDecoration(
+                color: _selectedColor ?? AIColors.primaryColor2,
+              ),
+              child: radios != null
+                  ? [
+                      80.heightBox,
+                      "All Channels".text.xl.white.semiBold.make().px16(),
+                      20.heightBox,
+                      ListView(
+                              padding: Vx.m0,
+                              shrinkWrap: true,
+                              children: radios
+                                  .map(
+                                    (e) => ListTile(
+                                      onTap: () {
+                                        _audioPlayer.pause();
+                                        MyRadio _newRadio;
+                                        Navigator.pop(context);
 
-                                      _newRadio = radios.firstWhere(
-                                          (element) => element.id == e.id);
-                                      radios.remove(_newRadio);
-                                      radios.insert(0, _newRadio);
+                                        _newRadio = radios.firstWhere(
+                                            (element) => element.id == e.id);
+                                        radios.remove(_newRadio);
+                                        radios.insert(0, _newRadio);
+                                        _selectedColor = Color(
+                                            int.tryParse(_newRadio.color));
+                                        setState(() {});
 
-                                      _selectedColor =
-                                          Color(int.tryParse(_newRadio.color));
-                                      _playMusic(e.url);
-                                    },
-                                    leading: CircleAvatar(
-                                      backgroundImage: NetworkImage(e.icon),
+                                        _playMusic(e.url);
+                                      },
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(e.icon),
+                                      ),
+                                      title: "${e.name} FM".text.white.make(),
+                                      subtitle: e.tagline.text.white.make(),
                                     ),
-                                    title: "${e.name} FM".text.white.make(),
-                                    subtitle: e.tagline.text.white.make(),
-                                  ),
-                                )
-                                .toList())
-                        .expand(),
-                  ].vStack(crossAlignment: CrossAxisAlignment.start)
-                : const Offstage(),
+                                  )
+                                  .toList())
+                          .expand(),
+                    ].vStack(
+                      crossAlignment: CrossAxisAlignment.start,
+                    )
+                  : const Offstage(),
+            ),
           ),
-        ),
+        ).backgroundColor(Colors.transparent).opacity75(),
       ),
       body: Stack(
         fit: StackFit.expand,
