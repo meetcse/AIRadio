@@ -38,8 +38,13 @@ class _HomePageState extends State<HomePage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
+  void dispose() {
+    super.dispose();
+    _audioPlayer.stop();
+  }
+
+  @override
   void initState() {
-    // TODO: implement initState
     setUpAlan();
     super.initState();
     fetchRadios();
@@ -165,6 +170,20 @@ class _HomePageState extends State<HomePage> {
                             children: radios
                                 .map(
                                   (e) => ListTile(
+                                    onTap: () {
+                                      _audioPlayer.pause();
+                                      MyRadio _newRadio;
+                                      Navigator.pop(context);
+
+                                      _newRadio = radios.firstWhere(
+                                          (element) => element.id == e.id);
+                                      radios.remove(_newRadio);
+                                      radios.insert(0, _newRadio);
+
+                                      _selectedColor =
+                                          Color(int.tryParse(_newRadio.color));
+                                      _playMusic(e.url);
+                                    },
                                     leading: CircleAvatar(
                                       backgroundImage: NetworkImage(e.icon),
                                     ),
@@ -279,13 +298,17 @@ class _HomePageState extends State<HomePage> {
                             child: [
                               Icon(
                                 _isPlaying
-                                    ? CupertinoIcons.stop_circle
+                                    ? rad == _selectedRadio
+                                        ? CupertinoIcons.stop_circle
+                                        : CupertinoIcons.play_circle
                                     : CupertinoIcons.play_circle,
                                 color: Colors.white,
                               ),
                               10.heightBox,
                               _isPlaying
-                                  ? "Double Tap to stop".text.gray300.make()
+                                  ? rad == _selectedRadio
+                                      ? "Double Tap to stop".text.gray300.make()
+                                      : "Double Tap to play".text.gray300.make()
                                   : "Double Tap to play".text.gray300.make(),
                             ].vStack(),
                           ),
@@ -308,7 +331,11 @@ class _HomePageState extends State<HomePage> {
                         .make()
                         .onInkDoubleTap(() {
                       if (_isPlaying) {
-                        _audioPlayer.stop();
+                        if (rad == _selectedRadio) {
+                          _audioPlayer.stop();
+                        } else {
+                          _playMusic(rad.url);
+                        }
                       } else {
                         _playMusic(rad.url);
                       }
